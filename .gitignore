@@ -6,3 +6,17 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .DS_Store
+
+# Ignore hidden files and directories
+.*
+!.gitignore
+
+# Ignore secret rules
+.cursor/rules/dev-rules/clerk.mdc
+
+.cursor/
+
+# Ignore BFG and backup files
+repo-backup-before-bfg.tar.gz
+docker/bfg.jar
+repo-mirror.git/

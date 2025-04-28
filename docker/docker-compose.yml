@@ -8,8 +8,6 @@ services:
       dockerfile: nextjs/Dockerfile
     volumes:
       - ../frontend:/app
-      # node_modulesをボリュームとして管理
-      - nextjs_node_modules:/app/node_modules
     ports:
       - "3001:3000"
     environment:
@@ -55,6 +53,7 @@ services:
       timeout: 30s
       retries: 3
       start_period: 60s
+    command: php artisan serve --host=0.0.0.0 --port=8000
 
   # MySQLサービス
   mysql:
@@ -96,8 +95,6 @@ services:
       - app-network
 
 volumes:
-  nextjs_node_modules:
-    driver: local
   mysql_data:
     driver: local
 

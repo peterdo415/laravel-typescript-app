@@ -27,6 +27,9 @@ RUN chmod +x /usr/local/bin/init.sh
 # package.jsonとpackage-lock.jsonをコピー（存在する場合）
 COPY --chown=node:node package*.json ./
 
+# 依存パッケージをインストール
+RUN npm install
+
 # ユーザーを設定
 USER node
 

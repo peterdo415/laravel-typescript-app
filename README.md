@@ -2,6 +2,14 @@
 
 ---
 
+## 重要な開発運用ルール（Docker依存管理）
+
+- **npmやcomposerで新しいパッケージを追加した場合は、必ず該当するDockerfile（例: docker/nextjs/Dockerfile, docker/laravel/Dockerfile）にもインストールコマンド（RUN npm install / RUN composer install など）を追記してください。**
+- これにより、コンテナ再起動や新規ビルド時に「必要なものが足りない」エラーを未然に防げます。
+- 依存追加後は必ず`docker-compose build`でイメージを再ビルドし、`docker-compose up -d`で再起動してください。
+
+---
+
 ## 1. 目的・前提  
 PHP/Zend Framework と JavaScript/jQuery の基礎はあるが **Laravel / TypeScript / Next.js / React** は未経験の開発者が、  
 **実際に動く Web アプリを作りながら基礎を体系的に身に付ける** ことをゴールとする。  
@@ -13,19 +21,19 @@ PHP/Zend Framework と JavaScript/jQuery の基礎はあるが **Laravel / Type
 
 | レイヤ       | 技術                | バージョン / LTS サポート期間                                                              | 参考 |
 |-------------|---------------------|------------------------------------------------------------------------------------------|------|
-| 言語        | PHP                 | 8.3.x / アクティブサポート：2025‑12、セキュリティサポート：2026‑12                        |      |
-|             | TypeScript          | 5.8.x / 最新GA                                                                            |      |
-| ライブラリ   | React               | 19.1 / 最新安定版                                                                         |      |
-| フレームワーク | Laravel             | 12.x / バグ修正：2026‑08、セキュリティ修正：2027‑02                                        |      |
-|             | Next.js             | 15.x / Active LTS：2024‑10〜2026‑10、Maintenance LTS：2026‑10〜2028‑10                     |      |
-| ランタイム   | Node.js             | 20.x “Iron” / Active LTS：2023‑10〜2025‑10、Maintenance LTS：2025‑10〜2026‑04               |      |
-| DB          | MySQL               | 8.0.x / Active Support：2026‑04                                                           |      |
-| テスト      | PHPUnit 11 / Pest   | 最新安定版を利用                                                                         |      |
-|             | Jest + React Testing Library | 最新安定版を利用                                                              |      |
-| インフラ    | Docker Compose      | 最新安定版を利用                                                                         |      |
-|             | GitHub Actions      | 常に最新を利用                                                                           |      |
+| 言語        | PHP                 | 8.3.x / アクティブサポート：2025-12、セキュリティサポート：2026-12                        |      |
+|             | TypeScript          | 5.8.x / 最新GA                                                                            |      |
+| ライブラリ   | React               | 19.1 / 最新安定版                                                                         |      |
+| フレームワーク | Laravel             | 12.x / バグ修正：2026-08、セキュリティ修正：2027-02                                        |      |
+|             | Next.js             | 15.x / Active LTS：2024-10〜2026-10、Maintenance LTS：2026-10〜2028-10                     |      |
+| ランタイム   | Node.js             | 20.x "Iron" / Active LTS：2023-10〜2025-10、Maintenance LTS：2025-10〜2026-04               |      |
+| DB          | MySQL               | 8.0.x / Active Support：2026-04                                                           |      |
+| テスト      | PHPUnit 11 / Pest   | 最新安定版を利用                                                                         |      |
+|             | Jest + React Testing Library | 最新安定版を利用                                                              |      |
+| インフラ    | Docker Compose      | 最新安定版を利用                                                                         |      |
+|             | GitHub Actions      | 常に最新を利用                                                                           |      |
 |             | Vercel (Next.js)    | 常に最新を利用                                                                           |      |
-|             | Fly.io / Laravel Forge | 常に最新を利用                                                                      |      |
+|             | Fly.io / Laravel Forge | 常に最新を利用                                                                      |      |
 
 
 ### 2.1 Docker 関連ディレクトリ構造
@@ -88,87 +96,62 @@ project-root/
 
 | ID | 機能 | 学習対象 | 概要 |
 |----|------|----------|------|
-| F‑01 | ユーザー登録/認証 | Laravel Breeze + API ルート / NextAuth.js | email + パスワードによる認証、CSRF 対策を含む |
-| F‑02 | チュートリアル閲覧 | Laravel Eloquent / React ルーティング | Laravel 側で教材（章・節）管理、Next.js App Router で表示 |
-| F‑03 | 進捗トラッキング | Laravel API Resource / React state & hooks | 既読・達成率をユーザー単位で保存・表示 |
-| F‑04 | 双方向コードプレイグラウンド | REST + fetch / React useState | エディタに入力 → Laravel でコード検証 → 結果を即返却 |
-| F‑05 | FAQ&コメント | Laravel Policy / React Server Components | 初歩的な CRUD を通じて MVC・フォーム処理を習得 |
-| F‑06 | テスト自動化 | PHPUnit / Jest | CI 上でバックエンド・フロントエンド双方の単体テスト実行 |
-| F‑07 | CI/CD & デプロイ | GitHub Actions, Docker‑Compose | main ブランチ push でステージングに自動デプロイ |
+| F-01 | ユーザー登録/認証 | Laravel Breeze + API ルート / NextAuth.js | email + パスワードによる認証、CSRF 対策を含む |
+| F-02 | チュートリアル閲覧 | Laravel Eloquent / React ルーティング | Laravel 側で教材（章・節）管理、Next.js App Router で表示 |
+| F-03 | 進捗トラッキング | Laravel API Resource / React state & hooks | 既読・達成率をユーザー単位で保存・表示 |
+| F-04 | 双方向コードプレイグラウンド | REST + fetch / React useState | エディタに入力 → Laravel でコード検証 → 結果を即返却 |
+| F-05 | FAQ&コメント | Laravel Policy / React Server Components | 初歩的な CRUD を通じて MVC・フォーム処理を習得 |
+| F-06 | テスト自動化 | PHPUnit / Jest | CI 上でバックエンド・フロントエンド双方の単体テスト実行 |
+| F-07 | CI/CD & デプロイ | GitHub Actions, Docker-Compose | main ブランチ push でステージングに自動デプロイ |
 
 ### 3.2 非機能要件  
 
-* **パフォーマンス**: API 応答 < 200 ms（ローカル Docker 環境）  
-* **セキュリティ**: OWASP Top 10 を満たす、HTTPS 必須、.env で機密管理  
-* **可観測性**: Laravel Telescope / Next.js Logger、Grafana Cloud で Metrics 収集  
+* **パフォーマンス**: API 応答 < 200 ms（ローカル Docker 環境）  
+* **セキュリティ**: OWASP Top 10 を満たす、HTTPS 必須、.env で機密管理  
+* **可観測性**: Laravel Telescope / Next.js Logger、Grafana Cloud で Metrics 収集  
 * **国際化**: ja-JP を既定、i18n 対応のため JSON 翻訳ファイルを構造化  
 
 ### 3.3 推奨インフラ構成（補足）  
 
-1. **ローカル**: Docker Compose（nginx + php‑fpm + mysql + node）。  
-2. **CI**: GitHub Actions で `build‑test‑deploy.yml`。  
+1. **ローカル**: Docker Compose（nginx + php-fpm + mysql + node）。  
+2. **CI**: GitHub Actions で `build-test-deploy.yml`。  
 3. **ステージング**:  
    * Laravel API → Fly.io (PostgreSQL アドオン付き)  
    * Next.js → Vercel (環境変数は Encrypt Secrets)  
 4. **本番**:  
    * Web/API → AWS Lightsail or ECS Fargate (Blue/Green)  
-   * DB → Amazon RDS MySQL 8.3 Multi‑AZ  
-   * 監視 → Amazon CloudWatch + Grafana Cloud  
+   * DB → Amazon RDS MySQL 8.3 Multi-AZ  
+   * 監視 → Amazon CloudWatch + Grafana Cloud  
 5. **CDN**: Cloudflare Pages（Next.js 静的出力キャッシュ）  
 
 ---
 
-## 4. 機能別要件定義  
+## 4. REST API設計
 
-### F‑01 ユーザー登録 / 認証  
-| 項目 | 内容 |
-|------|------|
-| エンドポイント | `POST /api/register`, `POST /api/login`, `POST /api/logout` |
-| バリデーション | email 必須・一意、パスワード 8 文字以上 |
-| 成功基準 | ① トークン/セッションが発行される ② 失敗時 JSON エラー返却 |
-| 学習ポイント | Laravel Breeze, Sanctum, NextAuth.js Adapter, React form   |
+### 認証系
+- POST `/api/auth/register` ... 新規ユーザー登録
+  - リクエスト: `{ name, email, password, password_confirmation }`
+  - レスポンス: `{ user: {id, name, email}, message }`
+  - エラー: `{ message, errors? }`
+- POST `/api/auth/login` ... ログイン
+  - リクエスト: `{ email, password }`
+  - レスポンス: `{ user, token, message }`
+- POST `/api/auth/logout` ... ログアウト
+  - レスポンス: `{ message }`
 
-### F‑02 チュートリアル閲覧  
-| 項目 | 内容 |
-|------|------|
-| エンドポイント | `GET /api/chapters/{id}` |
-| UI | Next.js App Router, React Markdown で本文表示 |
-| 学習ポイント | Eloquent Model, App Router, Dynamic Routes, Suspense |
+### ユーザー
+- GET `/api/users/me` ... ログインユーザー情報取得
+  - レスポンス: `{ user }`
 
-### F‑03 進捗トラッキング  
-| 項目 | 内容 |
-|------|------|
-| エンドポイント | `PATCH /api/progress/{chapter_id}` |
-| データ | user_id, chapter_id, percentage |
-| 学習ポイント | useState/useEffect → React 19 の Server Actions に書き換え |
+### 進捗
+- PATCH `/api/progress/{chapter_id}` ... 進捗更新
+  - リクエスト: `{ percentage }`
+  - レスポンス: `{ progress }`
 
-### F‑04 双方向コードプレイグラウンド  
-| 項目 | 内容 |
-|------|------|
-| エンドポイント | `POST /api/sandbox/run` |
-| 仕様 | Laravel で PHP コードを `eval` せず sandbox 実行 (e.g. php‑sandbox) |
-| 学習ポイント | fetch, useTransition, Web Worker (if heavy) |
-
-### F‑05 FAQ & コメント  
-| 項目 | 内容 |
-|------|------|
-| 概要 | 各教材ページに質問と回答を CRUD できる |
-| 権限制御 | 質問は認証ユーザー、回答は管理者のみ可 |
-| 学習ポイント | Laravel Policy / Gates, React Optimistic UI |
-
-### F‑06 テスト自動化  
-| 項目 | 内容 |
-|------|------|
-| バックエンド | PHPUnit 11 / Pest → モデル・コントローラ単体テスト |
-| フロント | Jest + React Testing Library → コンポーネントレンダリング確認 |
-| パイプライン | GitHub Actions job: `npm ci && npm run test`, `composer install && php artisan test` |
-
-### F‑07 CI/CD & デプロイ  
-| 項目 | 内容 |
-|------|------|
-| ブランチ運用 | GitHub Flow (main, feature/*) |
-| 自動化 | main にマージ → lint → test → docker build → push → deploy |
-| ロールバック | Fly.io / Vercel 共に Instant Rollback で 1 クリック復旧 |
+### レスポンス例
+- 成功: `{ ... }`
+- バリデーションエラー: `{ message: "Validation error", errors: { ... } }`
+- 認証エラー: `{ message: "Unauthenticated." }`
 
 ---
 
@@ -182,3 +165,45 @@ project-root/
 ---
 
 この要件定義をベースに進めることで、**環境構築 → バックエンド API → フロント実装 → テスト → デプロイ** までを一周体験でき、Laravel と Next.js/React/TypeScript の基礎が自然に身に付きます。  
+
+# ルーティング設計（SPA構成）
+
+## Next.js（フロントエンド）
+- すべてのページ遷移・状態管理はクライアントサイド（SPA）で完結
+- SSR/SSG/Server Componentは利用せず、`src/app/`配下の`page.tsx`・`login/`・`register/`・`logout/`のみ
+- API通信はすべてfetchでLaravel APIを呼び出す
+- Next.jsの`pages`ディレクトリや`app/api`ディレクトリは未使用
+
+### 画面ルート例
+| パス           | 役割             |
+|----------------|------------------|
+| `/`            | トップページ      |
+| `/login`       | ログインフォーム  |
+| `/register`    | 新規登録フォーム  |
+| `/logout`      | ログアウト処理    |
+
+
+## Laravel（バックエンドAPI）
+- すべてRESTful APIとして`routes/api.php`・`routes/auth.php`で定義
+- セッション認証（Sanctum）を利用
+- SSR/Bladeテンプレートは未使用
+
+### APIルート例
+| メソッド | パス                   | 役割                 | ミドルウェア         |
+|----------|------------------------|----------------------|----------------------|
+| POST     | `/api/auth/register`   | 新規ユーザー登録      | guest                |
+| POST     | `/api/auth/login`      | ログイン             | guest                |
+| POST     | `/api/auth/logout`     | ログアウト           | auth                 |
+| GET      | `/api/users/me`        | ログインユーザー情報  | auth:sanctum         |
+| GET      | `/api/user`            | ログインユーザー情報  | auth:sanctum         |
+| POST     | `/api/auth/forgot-password` | パスワードリセット | guest                |
+| POST     | `/api/auth/reset-password`  | パスワード再設定   | guest                |
+| GET      | `/api/auth/verify-email/{id}/{hash}` | メール認証 | auth, signed, throttle |
+| POST     | `/api/auth/email/verification-notification` | メール認証通知 | auth, throttle |
+
+
+## 補足
+- SSR/SSG/Server Componentを使わないことで、API設計・認証設計がシンプルになり、SPAとしての学習・運用コストが低減
+- 将来的にSEOやパフォーマンス要件が出た場合は、Next.jsのSSR/SSGページを段階的に追加可能
+
+---
