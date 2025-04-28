@@ -10,3 +10,6 @@ yarn-error.log*
 # Ignore hidden files and directories
 .*
 !.gitignore
+
+# Ignore secret rules
+.cursor/rules/dev-rules/clerk.mdc
