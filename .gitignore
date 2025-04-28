@@ -15,3 +15,8 @@ yarn-error.log*
 .cursor/rules/dev-rules/clerk.mdc
 
 .cursor/
+
+# Ignore BFG and backup files
+repo-backup-before-bfg.tar.gz
+docker/bfg.jar
+repo-mirror.git/
