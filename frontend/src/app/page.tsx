@@ -1,6 +1,48 @@
+"use client";
+import { useEffect, useState } from "react";
 import Link from 'next/link'
 
 export default function Home() {
+  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/api/user", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+
+    // ログアウト時にuser stateをnullにリセットするカスタムイベントリスナー
+    const handleLogoutEvent = () => setUser(null);
+    window.addEventListener("app-logout", handleLogoutEvent);
+
+    // ログイン時にユーザー情報を再取得するカスタムイベントリスナー
+    const handleLoginEvent = () => {
+      setLoading(true);
+      fetchUser();
+    };
+    window.addEventListener("app-login", handleLoginEvent);
+
+    return () => {
+      window.removeEventListener("app-logout", handleLogoutEvent);
+      window.removeEventListener("app-login", handleLoginEvent);
+    };
+  }, []);
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       {/* ヘッダーセクション */}
@@ -8,9 +50,12 @@ export default function Home() {
         <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl mb-4">
           Laravel + Next.js
         </h1>
-        <p className="text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
+        <p className="text-lg leading-8 text-gray-600 max-w-2xl mx-auto mb-4">
           フルスタック開発学習プラットフォーム
         </p>
+        <div className="mt-6 text-2xl font-semibold text-indigo-700">
+          {loading ? "Loading..." : user ? `Hello ${user.name}` : "Hello Guest"}
+        </div>
       </section>
 
       {/* 機能紹介セクション */}
